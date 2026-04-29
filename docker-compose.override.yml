@@ -1,0 +1,18 @@
+services:
+  api:
+    build:
+      target: development
+    volumes:
+      - .:/app
+    environment:
+      - TRADING_MODE=paper
+      - LOG_LEVEL=DEBUG
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  db:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"

@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+.uv/
+
+# Environment
+.env
+*.env
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# macOS
+.DS_Store
+
+# Alembic generated
+alembic/versions/*.pyc
+
+# Claude Code local settings (contains permissions/API keys)
+.claude/settings.local.json
+
+# bkit local state (runtime data, not source)
+.bkit/state/
+.bkit/runtime/
+.bkit/snapshots/
+.bkit/audit/
+.bkit/checkpoints/
+.bkit/decisions/
+.bkit/workflows/
+.bkit/resume/
+
+# Docker volumes / runtime data
+postgres_data/
+redis_data/
+
+# Logs
+*.log
+logs/
