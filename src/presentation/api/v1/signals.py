@@ -5,6 +5,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from src.application.use_cases.analyze_stock import AnalyzeStockRequest, AnalyzeStockUseCase
+from src.application.services.report_payload import extract_json_payload
 from src.domain.repositories.signal_repository import SignalRepository
 from src.domain.repositories.watchlist_repository import WatchlistRepository
 from src.presentation.auth import require_api_key
@@ -16,7 +17,18 @@ router = APIRouter(prefix="/v1/signals", tags=["signals"])
 
 def _signal_to_response(sig) -> SignalResponse:
     report = sig.analyst_report or ""
-    summary = (report[:200] + "...") if len(report) > 200 else report
+    payload = extract_json_payload(report)
+    if payload:
+        thesis = payload.get("investment_thesis") or []
+        first_thesis = ""
+        if isinstance(thesis, list) and thesis:
+            item = thesis[0]
+            first_thesis = item.get("title", "") if isinstance(item, dict) else str(item)
+        summary_source = first_thesis or payload.get("markdown_report") or report
+    else:
+        summary_source = report
+    summary_text = str(summary_source)
+    summary = (summary_text[:200] + "...") if len(summary_text) > 200 else summary_text
     return SignalResponse(
         id=sig.id,
         ticker=sig.ticker,
@@ -55,7 +67,11 @@ async def analyze_stock(
     body: AnalyzeRequest,
     analyze_stock_uc: AnalyzeStockUseCase = Depends(Provide[TradingContainer.analyze_stock_uc]),
 ) -> SignalResponse:
-    req = AnalyzeStockRequest(ticker=body.ticker)
+    req = AnalyzeStockRequest(
+        ticker=body.ticker,
+        force_quant=body.force_quant,
+        include_charts=body.include_charts,
+    )
     result = await analyze_stock_uc.execute(req)
     if not result.signal:
         raise HTTPException(

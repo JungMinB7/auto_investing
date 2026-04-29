@@ -39,6 +39,20 @@ Confidence: HIGH
 Current Price: ₩75,000
 """
 
+JSON_REPORT = """\
+{
+  "ticker": "005930",
+  "investment_opinion": "BUY",
+  "confidence": "MEDIUM-HIGH",
+  "target_price": 90000,
+  "current_price": "₩75,000",
+  "investment_thesis": [{"title": "Memory cycle recovery", "evidence": "DRAM pricing improves."}],
+  "risks": ["Memory cycle reversal"],
+  "catalysts": ["HBM order growth"],
+  "markdown_report": "# Samsung report"
+}
+"""
+
 
 @pytest.fixture
 def parser() -> SignalParserService:
@@ -85,6 +99,20 @@ class TestSignalParserService:
         assert sig.analyst_report == FULL_REPORT
 
     def test_case_insensitive_parsing(self, parser: SignalParserService):
-        report = "investment opinion: buy\nconfidence: high\n12-Month Target Price: ₩90,000\nCurrent Price: ₩75,000"
+        report = (
+            "investment opinion: buy\n"
+            "confidence: high\n"
+            "12-Month Target Price: ₩90,000\n"
+            "Current Price: ₩75,000"
+        )
         sig = parser.parse("005930", report)
         assert sig.signal_type == SignalType.BUY
+
+    def test_parse_structured_json_report(self, parser: SignalParserService):
+        sig = parser.parse("005930", JSON_REPORT)
+        assert sig.signal_type == SignalType.BUY
+        assert sig.confidence == ConfidenceLevel.MEDIUM_HIGH
+        assert sig.target_price == 90_000.0
+        assert sig.current_price == 75_000.0
+        assert sig.upside_pct == pytest.approx(20.0)
+        assert sig.analyst_report == JSON_REPORT

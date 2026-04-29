@@ -49,6 +49,18 @@ class KiwoomRateLimitError(BrokerError):
     """Kiwoom API rate limit exceeded."""
 
 
+class AlpacaOrderError(BrokerError):
+    """Order placement rejected by Alpaca REST API."""
+
+
+class RegimeKillSwitchError(RiskGuardError):
+    """Market regime is BEAR — new BUY orders blocked by kill switch."""
+
+
+class LowScoreError(RiskGuardError):
+    """trade_score below ORDER threshold — order not placed."""
+
+
 # ── Analysis exceptions ────────────────────────────────────
 
 class AnalysisError(TradingError):

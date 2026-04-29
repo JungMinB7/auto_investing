@@ -22,7 +22,7 @@ _KST = "Asia/Seoul"
 
 
 class TradingScheduler:
-    """APScheduler wrapper for the 4-job KRX trading schedule."""
+    """APScheduler wrapper for the 5-job KRX+US trading schedule."""
 
     def __init__(self, pipeline: TradingPipelineService) -> None:
         self._pipeline = pipeline
@@ -30,6 +30,13 @@ class TradingScheduler:
         self._register_jobs()
 
     def _register_jobs(self) -> None:
+        self._scheduler.add_job(
+            self._pipeline.check_market_regime,
+            CronTrigger(hour=8, minute=45, timezone=_KST),
+            id="check_market_regime",
+            name="Market regime check (Kill Switch)",
+            misfire_grace_time=60,
+        )
         self._scheduler.add_job(
             self._pipeline.prepare_market_open,
             CronTrigger(hour=8, minute=50, timezone=_KST),
@@ -57,7 +64,7 @@ class TradingScheduler:
             name="EOD closing routine",
             misfire_grace_time=60,
         )
-        logger.info("TradingScheduler: 4 jobs registered")
+        logger.info("TradingScheduler: 5 jobs registered")
 
     def start(self) -> None:
         self._scheduler.start()

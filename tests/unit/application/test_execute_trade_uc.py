@@ -95,8 +95,9 @@ class TestExecuteTradeUseCase:
     @pytest.mark.asyncio
     async def test_quantity_calculated_from_max_investment(self, use_case, broker):
         broker.get_current_price.return_value = 100_000.0
-        trade = await use_case.execute(ExecuteTradeRequest(ticker="005930", signal=_make_signal()))
-        assert trade.quantity == 10  # 1_000_000 / 100_000
+        # trade_score=90 → sizing_factor=1.0 → full max_position_krw
+        trade = await use_case.execute(ExecuteTradeRequest(ticker="005930", signal=_make_signal(), trade_score=90.0))
+        assert trade.quantity == 10  # 1_000_000 * 1.0 / 100_000
 
     @pytest.mark.asyncio
     async def test_saves_trade_to_repo(self, use_case, trade_repo):

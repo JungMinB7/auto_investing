@@ -28,6 +28,20 @@ class Settings(BaseSettings):
 
     # ── Claude ──────────────────────────────────────────────
     anthropic_api_key: str = Field(default="", alias="ANTHROPIC_API_KEY")
+    analyst_enable_quant_context: bool = Field(default=True, alias="ANALYST_ENABLE_QUANT_CONTEXT")
+    analyst_include_charts: bool = Field(default=False, alias="ANALYST_INCLUDE_CHARTS")
+
+    # ── Alpaca (US stocks / ETFs) ────────────────────────────
+    alpaca_api_key: str = Field(default="", alias="ALPACA_API_KEY")
+    alpaca_secret_key: str = Field(default="", alias="ALPACA_SECRET_KEY")
+    alpaca_is_paper: bool = Field(default=True, alias="ALPACA_IS_PAPER")
+
+    # ── Position sizing ──────────────────────────────────────
+    max_position_usd: float = Field(default=200.0, alias="MAX_POSITION_USD")
+
+    # ── Signal score thresholds ──────────────────────────────
+    score_order_threshold: float = Field(default=80.0, alias="SCORE_ORDER_THRESHOLD")
+    score_notify_threshold: float = Field(default=60.0, alias="SCORE_NOTIFY_THRESHOLD")
 
     # ── Discord ─────────────────────────────────────────────
     discord_webhook_url: str = Field(default="", alias="DISCORD_WEBHOOK_URL")

@@ -45,10 +45,11 @@ class TradingSignal:
     ticker: str
     signal_type: SignalType
     confidence: ConfidenceLevel
-    analyst_report: str           # 원문 markdown
+    analyst_report: str           # 원문 JSON / markdown
     target_price: float | None = None
     current_price: float | None = None
     upside_pct: float | None = None
+    trade_score: float = 0.0      # SignalScore.trade_score (0-100)
     id: UUID = field(default_factory=uuid4)
     created_at: datetime = field(default_factory=datetime.utcnow)
 

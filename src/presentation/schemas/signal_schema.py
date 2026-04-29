@@ -10,7 +10,12 @@ from src.domain.entities.signal import ConfidenceLevel, SignalType
 
 
 class AnalyzeRequest(BaseModel):
-    ticker: str = Field(..., pattern=r"^\d{6}$", description="6-digit KRX ticker")
+    ticker: str = Field(..., min_length=1, max_length=30, description="Ticker or company name")
+    force_quant: bool = Field(default=False, description="Run quant-research/backtest context")
+    include_charts: bool = Field(
+        default=False,
+        description="Activate +charts financial-report packaging",
+    )
 
 
 class SignalResponse(BaseModel):
